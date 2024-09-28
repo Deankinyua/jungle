@@ -1,0 +1,5 @@
+;FFMETADATA1
+major_brand=dash
+minor_version=0
+compatible_brands=iso6mp41
+encoder=Lavf60.16.100
