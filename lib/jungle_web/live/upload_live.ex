@@ -29,11 +29,20 @@ defmodule JungleWeb.UploadLive do
         # name = System.shell("exiftool  -FileName  #{path}")
         # dbg(File.ls(path))
         # dbg(path)
-        # System.shell("ffmpeg -i #{path} -f ffmetadata in.txt")
-        # System.shell("ffmpeg -i #{path} lovejustindavedd.m4a")
         # File.cp!(path, dest)
         ent = Enum.at(socket.assigns.uploads.avatar.entries, 0)
-        file_name = ent.client_name
+
+        file_name = Path.rootname(ent.client_name)
+
+        unwanted_characters = [" ", "(", ")", "-", "[", "]"]
+
+        file_name = Enum.join(String.split(file_name, unwanted_characters), "_")
+        output_file = file_name <> "." <> "m4a"
+        dbg(output_file)
+
+        command = "ffmpeg -i #{path} " <> output_file
+        dbg(command)
+        System.shell(command)
 
         {:ok, ~p"/uploads/#{Path.basename(dest)}"}
       end)
