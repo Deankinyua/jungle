@@ -26,11 +26,15 @@ defmodule JungleWeb.UploadLive do
       consume_uploaded_entries(socket, :avatar, fn %{path: path}, _entry ->
         dest = Path.join(Application.app_dir(:jungle, "priv/static/uploads"), Path.basename(path))
         # You will need to create `priv/static/uploads` for `File.cp!/2` to work.
-        name = System.shell("exiftool  -FileName  #{path}")
-        dbg(name)
+        # name = System.shell("exiftool  -FileName  #{path}")
+        # dbg(File.ls(path))
+        # dbg(path)
         # System.shell("ffmpeg -i #{path} -f ffmetadata in.txt")
         # System.shell("ffmpeg -i #{path} lovejustindavedd.m4a")
-        File.cp!(path, dest)
+        # File.cp!(path, dest)
+        ent = Enum.at(socket.assigns.uploads.avatar.entries, 0)
+        file_name = ent.client_name
+
         {:ok, ~p"/uploads/#{Path.basename(dest)}"}
       end)
 
