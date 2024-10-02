@@ -20,12 +20,14 @@ import "phoenix_html";
 // Establish Phoenix Socket and LiveView configuration.
 import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
+import Hooks from "./hooks"; // Import hooks
 import topbar from "../vendor/topbar";
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
   .getAttribute("content");
 let liveSocket = new LiveSocket("/live", Socket, {
+  hooks: Hooks,
   longPollFallbackMs: 2500,
   params: { _csrf_token: csrfToken },
 });
@@ -34,6 +36,17 @@ let liveSocket = new LiveSocket("/live", Socket, {
 topbar.config({ barColors: { 0: "#29d" }, shadowColor: "rgba(0, 0, 0, .3)" });
 window.addEventListener("phx:page-loading-start", (_info) => topbar.show(300));
 window.addEventListener("phx:page-loading-stop", (_info) => topbar.hide());
+
+window.addEventListener("phx:download", (event) => {
+  console.log("event download received");
+  let uri = event.detail.path;
+  console.log(event.detail.path);
+  let frame = document.createElement("iframe");
+  frame.setAttribute("src", response.uri);
+  frame.style.visibility = "hidden";
+  frame.style.display = "none";
+  document.body.appendChild(frame);
+});
 
 // connect if there are any LiveViews on the page
 liveSocket.connect();

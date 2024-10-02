@@ -1,7 +1,8 @@
 # lib/my_app_web/live/upload_live.ex
 defmodule JungleWeb.UploadLive do
   use JungleWeb, :live_view
-  alias JungleWeb.UserController
+
+  # alias Plug.Conn
 
   @impl true
 
@@ -14,9 +15,13 @@ defmodule JungleWeb.UploadLive do
 
         <button type="submit">Upload</button>
       </form>
-      <.link patch={~p"/users"}>
+      <.link href={@download} download>
         <.button>Download the File</.button>
       </.link>
+
+      <div id="hook-demo">
+        <button id="click-btn" phx-hook="ClickHook" class="btn">Click Me!</button>
+      </div>
 
       <%!-- render each avatar entry --%>
       <%= for entry <- @uploads.avatar.entries
@@ -63,6 +68,7 @@ defmodule JungleWeb.UploadLive do
     {:ok,
      socket
      |> assign(:uploaded_files, [])
+     |> assign(:download, "")
      |> allow_upload(:avatar, accept: ~w(.mp3 .jpeg .png), max_entries: 2)}
   end
 
@@ -76,22 +82,18 @@ defmodule JungleWeb.UploadLive do
     {:noreply, cancel_upload(socket, :avatar, ref)}
   end
 
-  defp send_message(message) do
-    pid = UserController.get_pid()
+  # defp send_message(message) do
+  #   pid = spawn(fn -> UserController.get_pid() end)
 
-    Process.send_after(pid, message, 2000)
-  end
+  #   Process.send_after(pid, message, 2000)
+  # end
 
   @impl Phoenix.LiveView
   def handle_event("save", _params, socket) do
     uploaded_files =
       consume_uploaded_entries(socket, :avatar, fn %{path: path}, _entry ->
-        dest = Path.join(Application.app_dir(:jungle, "priv/static/uploads"), Path.basename(path))
-        # You will need to create `priv/static/uploads` for `File.cp!/2` to work.
-        # name = System.shell("exiftool  -FileName  #{path}")
-        # dbg(File.ls(path))
-        # dbg(path)
-        # File.cp!(path, dest)
+        # dest = Path.join(Application.app_dir(:jungle, "priv/static/uploads"), Path.basename(path))
+
         ent = Enum.at(socket.assigns.uploads.avatar.entries, 0)
 
         file_name = Path.rootname(ent.client_name)
@@ -100,22 +102,34 @@ defmodule JungleWeb.UploadLive do
 
         file_name = Enum.join(String.split(file_name, unwanted_characters), "_")
         output_file = file_name <> "." <> "m4a"
-        send_message(output_file)
         # send(receiver_pid, {self(), output_file})
         # send(pid, {self(), output_file})
-        output_file = "priv/static/downloads/" <> output_file
+        new_file = "priv/static/downloads/" <> output_file
 
-        path1 = Path.absname(output_file)
+        # path1 = Path.absname(output_file)
 
-        dbg(path1)
+        # dbg(path1)
 
-        command = "ffmpeg -i #{path} " <> output_file
+        command = "ffmpeg -i #{path} " <> new_file
         System.shell(command)
-
-        {:ok, ~p"/uploads/#{Path.basename(dest)}"}
+        {:ok, output_file}
       end)
 
-    {:noreply, socket}
+    uploaded_file = Enum.at(uploaded_files, 0)
+
+    dbg(uploaded_file)
+
+    final_file_name = "priv/static/downloads/" <> uploaded_file
+
+    path = Application.app_dir(:jungle, final_file_name)
+
+    dbg(path)
+
+    location = "/downloads/" <> uploaded_file
+
+    {:noreply,
+     socket
+     |> assign(download: location)}
   end
 
   # update(socket, :uploaded_files, &(&1 ++ uploaded_files))
