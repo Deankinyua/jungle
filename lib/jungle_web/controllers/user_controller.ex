@@ -2,38 +2,25 @@ defmodule JungleWeb.UserController do
   use JungleWeb, :controller
 
   def get_pid do
-    say_hello = fn ->
-      receive do
-        message ->
-          IO.puts("message")
-          message
-      after
-        5000 ->
-          IO.puts("Timeout - no messages received")
-      end
-    end
-
-    say_hello
-  end
-
-  def introspect(conn, opts) do
-    message = Keyword.get(opts, :message, "default message")
-
-    conn = assign(conn, :message, message)
-
-    conn
+    self()
   end
 
   def index(conn, _params) do
-    # file_name = say_hello.()
+    receiver = fn ->
+      receive do
+        message ->
+          IO.puts(message)
+          final_file_name = "priv/static/downloads/" <> message
+          dbg(final_file_name)
+          # path = Application.app_dir(:jungle, final_file_name)
+          # send_download(conn, {:file, path})
+      after
+        0 ->
+          IO.puts(:stderr, "No message in the mailbox")
+      end
+    end
 
-    # final_file_name = "priv/static/downloads/" <> file
-
-    dbg(conn)
-    # path = Application.app_dir(:jungle, final_file_name)
-    # send_download(conn, {:file, path})
+    receiver.()
     render(conn, :index)
   end
-
-  # redirect(to: ~p"/")
 end

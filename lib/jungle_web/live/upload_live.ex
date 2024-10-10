@@ -2,7 +2,6 @@
 defmodule JungleWeb.UploadLive do
   use JungleWeb, :live_view
 
-  # alias Plug.Conn
 
   @impl true
 
@@ -90,6 +89,7 @@ defmodule JungleWeb.UploadLive do
 
   @impl Phoenix.LiveView
   def handle_event("save", _params, socket) do
+
     uploaded_files =
       consume_uploaded_entries(socket, :avatar, fn %{path: path}, _entry ->
         # dest = Path.join(Application.app_dir(:jungle, "priv/static/uploads"), Path.basename(path))
@@ -102,13 +102,8 @@ defmodule JungleWeb.UploadLive do
 
         file_name = Enum.join(String.split(file_name, unwanted_characters), "_")
         output_file = file_name <> "." <> "m4a"
-        # send(receiver_pid, {self(), output_file})
-        # send(pid, {self(), output_file})
+
         new_file = "priv/static/downloads/" <> output_file
-
-        # path1 = Path.absname(output_file)
-
-        # dbg(path1)
 
         command = "ffmpeg -i #{path} " <> new_file
         System.shell(command)
@@ -117,13 +112,9 @@ defmodule JungleWeb.UploadLive do
 
     uploaded_file = Enum.at(uploaded_files, 0)
 
-    dbg(uploaded_file)
-
     final_file_name = "priv/static/downloads/" <> uploaded_file
 
     path = Application.app_dir(:jungle, final_file_name)
-
-    dbg(path)
 
     location = "/downloads/" <> uploaded_file
 
