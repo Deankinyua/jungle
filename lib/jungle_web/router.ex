@@ -19,6 +19,7 @@ defmodule JungleWeb.Router do
 
     get "/", PageController, :home
     live "/uploads", UploadLive
+    live "/uploads2", UploadEntry
     get "/users", UserController, :index
   end
 

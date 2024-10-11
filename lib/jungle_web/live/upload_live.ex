@@ -2,7 +2,6 @@
 defmodule JungleWeb.UploadLive do
   use JungleWeb, :live_view
 
-
   @impl true
 
   def render(assigns) do
@@ -68,7 +67,7 @@ defmodule JungleWeb.UploadLive do
      socket
      |> assign(:uploaded_files, [])
      |> assign(:download, "")
-     |> allow_upload(:avatar, accept: ~w(.mp3 .jpeg .png), max_entries: 2)}
+     |> allow_upload(:avatar, accept: ~w(.mp3 .jpeg .png), max_entries: 1)}
   end
 
   @impl Phoenix.LiveView
@@ -89,15 +88,16 @@ defmodule JungleWeb.UploadLive do
 
   @impl Phoenix.LiveView
   def handle_event("save", _params, socket) do
-
     uploaded_files =
       consume_uploaded_entries(socket, :avatar, fn %{path: path}, _entry ->
         # dest = Path.join(Application.app_dir(:jungle, "priv/static/uploads"), Path.basename(path))
 
         ent = Enum.at(socket.assigns.uploads.avatar.entries, 0)
+        dbg(ent.client_name)
 
         file_name = Path.rootname(ent.client_name)
 
+        dbg(file_name)
         unwanted_characters = [" ", "(", ")", "-", "[", "]"]
 
         file_name = Enum.join(String.split(file_name, unwanted_characters), "_")
@@ -111,10 +111,6 @@ defmodule JungleWeb.UploadLive do
       end)
 
     uploaded_file = Enum.at(uploaded_files, 0)
-
-    final_file_name = "priv/static/downloads/" <> uploaded_file
-
-    path = Application.app_dir(:jungle, final_file_name)
 
     location = "/downloads/" <> uploaded_file
 
