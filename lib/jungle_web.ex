@@ -17,7 +17,8 @@ defmodule JungleWeb do
   those modules here.
   """
 
-  def static_paths, do: ~w(downloads assets fonts images favicon.ico robots.txt)
+  def static_paths, do: ~w(fonts assets images favicon.ico robots.txt)
+  # downloads assets
 
   def router do
     quote do

@@ -17,7 +17,8 @@ defmodule Jungle.Application do
       # Start a worker by calling: Jungle.Worker.start_link(arg)
       # {Jungle.Worker, arg},
       # Start to serve requests, typically the last entry
-      JungleWeb.Endpoint
+      JungleWeb.Endpoint,
+      {Jungle.Periodically, []}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

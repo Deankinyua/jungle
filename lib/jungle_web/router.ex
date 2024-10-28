@@ -21,6 +21,7 @@ defmodule JungleWeb.Router do
     live "/uploads", UploadLive
     live "/uploads2", UploadEntry
     get "/users", UserController, :index
+    get "/users/download", UserController, :downloader
   end
 
   # Other scopes may use custom stacks.

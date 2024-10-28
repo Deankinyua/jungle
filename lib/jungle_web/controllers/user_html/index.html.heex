@@ -1,1 +1,10 @@
-<h1>Wait for your download to start</h1>
+<h1>
+  <%= live_render(@conn, JungleWeb.UploadEntry,
+    id: "upload_live",
+    sticky: true
+  ) %>
+
+  <.link patch={~p"/users/download"}>
+    New Region
+  </.link>
+</h1>

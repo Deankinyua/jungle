@@ -1,26 +1,38 @@
 defmodule JungleWeb.UserController do
   use JungleWeb, :controller
 
-  def get_pid do
-    self()
-  end
+  # alias Recursive.Periodically
 
   def index(conn, _params) do
-    receiver = fn ->
-      receive do
-        message ->
-          IO.puts(message)
-          final_file_name = "priv/static/downloads/" <> message
-          dbg(final_file_name)
-          # path = Application.app_dir(:jungle, final_file_name)
-          # send_download(conn, {:file, path})
-      after
-        0 ->
-          IO.puts(:stderr, "No message in the mailbox")
-      end
-    end
-
-    receiver.()
     render(conn, :index)
+  end
+
+  def downloader(conn, _params) do
+    message = GenServer.call(MyStack, conn)
+
+    dbg(message)
+
+    length = Enum.count(message)
+
+    kill(conn, message, 0, length)
+
+    render(conn, :download)
+  end
+
+  def kill(conn, enum, index, length) do
+    if index >= length do
+      IO.puts("The Process is complete")
+    else
+      file = Enum.at(enum, index)
+
+      final_file_name = "priv/static/downloads/" <> file
+
+      path = Application.app_dir(:jungle, final_file_name)
+
+      send_download(conn, {:file, path})
+      Process.sleep(4000)
+
+      kill(conn, enum, index + 1, length)
+    end
   end
 end

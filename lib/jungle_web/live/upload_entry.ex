@@ -99,6 +99,8 @@ defmodule JungleWeb.UploadEntry do
               file_name = Enum.join(String.split(file_name, unwanted_characters), "_")
               output_file = file_name <> "." <> "m4a"
 
+              send(MyStack, output_file)
+
               new_file = "priv/static/downloads/" <> output_file
 
               command = "ffmpeg -i #{path} " <> new_file
