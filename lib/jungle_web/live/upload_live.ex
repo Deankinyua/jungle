@@ -8,6 +8,9 @@ defmodule JungleWeb.UploadLive do
     ~H"""
     <%!-- use phx-drop-target with the upload ref to enable file drag and drop --%>
     <section phx-drop-target="{@uploads.avatar.ref}">
+      <h1>
+        enables download of one file at a time
+      </h1>
       <form id="upload-form" phx-submit="save" phx-change="validate">
         <.live_file_input upload={@uploads.avatar} id="fileInput" />
 
