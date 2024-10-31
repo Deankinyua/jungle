@@ -158,7 +158,8 @@ defmodule JungleWeb.UploadEntry do
     #  |> assign(download: location)}
   end
 
-  # update(socket, :uploaded_files, &(&1 ++ uploaded_files))
+  # update(socket, :uploaded_files, &(&
+  # 1 ++ uploaded_files))
 
   defp error_to_string(:too_large), do: "Too large"
   defp error_to_string(:too_many_files), do: "You have selected too many files"
